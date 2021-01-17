@@ -33,7 +33,7 @@
 						<password>Shaik123456</password>
 						<workers>1</workers>
 						<workerType>MICRO</workerType>
-						<environment>Sandbox</environment>
+						<environment>Design</environment>
 						<muleVersion>4.2.2</muleVersion>
 						<applicationName>Demo-Application5</applicationName>
 						<objectStoreV2>true</objectStoreV2>
