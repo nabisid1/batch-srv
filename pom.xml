@@ -35,7 +35,7 @@
 						<workerType>MICRO</workerType>
 						<environment>Design</environment>
 						<muleVersion>4.2.2</muleVersion>
-						<applicationName>Demo-Application5</applicationName>
+						<applicationName>batchsrv</applicationName>
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
 				</configuration>
