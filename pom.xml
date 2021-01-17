@@ -33,7 +33,7 @@
 						<password>Shaik123456</password>
 						<workers>1</workers>
 						<workerType>MICRO</workerType>
-						<environment>Design</environment>
+						<environment>Sandbox</environment>
 						<muleVersion>4.2.2</muleVersion>
 						<applicationName>batchsrv</applicationName>
 						<objectStoreV2>true</objectStoreV2>
