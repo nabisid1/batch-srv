@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8847330a-8a8f-4b32-812d-a71b94c2f004" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="batch-srvFlow" doc:id="85abffe3-c0e3-45b7-9b5b-80c3609fbaa7" >
+		<http:listener doc:name="Listener" doc:id="65d9521c-c297-4387-b98d-9fc8349bf935" config-ref="HTTP_Listener_config" path="/batch"/>
+		<set-payload value='#[[1,2,3,4,5,6]]' doc:name="[1,2,3,4,5,6]" doc:id="4817199f-540a-4644-b4a5-948d9282629e" />
+		<batch:job jobName="batch-srvBatch_Job" doc:id="74959541-57e8-47a8-b91f-a886fb22b6b1" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="f47c1c12-f107-4439-b2ce-7e27edadc54f" acceptPolicy="ONLY_FAILURES" acceptExpression="#[payload &gt; 3]">
+					<try doc:name="Try" doc:id="f09f3b63-6279-4b9d-b74a-00eec4413407" >
+						<set-payload value="#[payload * 10]" doc:name="payload * 10" doc:id="547c7f39-cbed-408f-af84-c81fa610c3b5" />
+						<error-handler >
+							<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ab36fb62-c487-4c3e-a48f-8e127b9e3cfa" >
+								<set-variable value="#[(vars.errorRecords default []) ++ payload]" doc:name="Set Variable" doc:id="a44a2bfe-5756-4aa5-b5a0-beda6cb3538a" variableName="errorRecords"/>
+							</on-error-continue>
+						</error-handler>
+					</try>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="e0efd6e6-3289-46fd-b3aa-ab58af288a25" size="2">
+						<logger level="INFO" doc:name="Logger" doc:id="770098b2-daaf-45a3-8bba-ed5c5172b025" message="#[payload]"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="1caff0c4-b52a-4ac9-ad40-be8afe0fbb59" message="#[payload]"/>
+			</batch:on-complete>
+		</batch:job>
+		<ee:transform doc:name="Transform Message" doc:id="882dc049-03a8-49a0-b954-1ad341f0f399" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+varpayload:payload,
+varerrorRecords: vars.errorRecords,
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
